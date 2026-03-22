@@ -107,7 +107,7 @@ public class FlightLambdaHandler implements RequestHandler<APIGatewayProxyReques
         payload.put("flightName", flightName);
         payload.put("data", flightData);
 
-        if (webhookUrl == null || webhookUrl.isBlank()) {
+        if (webhookUrl == null || webhookUrl.isBlank() || "none".equals(webhookUrl)) {
             return;
         }
 
