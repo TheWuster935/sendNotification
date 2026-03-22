@@ -10,13 +10,17 @@ import java.util.Map;
 public class FlightController {
 
     private final FlightService flightService;
+    private final WebhookService webhookService;
 
-    public FlightController(FlightService flightService) {
+    public FlightController(FlightService flightService, WebhookService webhookService) {
         this.flightService = flightService;
+        this.webhookService = webhookService;
     }
 
     @GetMapping("/api/flight")
     public Map<String, Object> getFlightData(@RequestParam(defaultValue = "WN2026") String flight) {
-        return flightService.getFlightData(flight);
+        Map<String, Object> flightData = flightService.getFlightData(flight);
+        webhookService.fireWebhook(flightData);
+        return flightData;
     }
 }
