@@ -120,7 +120,7 @@
             btn.innerHTML = '<span class="spinner"></span> Loading...';
             dataDiv.style.display = 'none';
 
-            fetch('/api/flight?flight=WN2026')
+            fetch('[[${apiBaseUrl}]]' + '/api/flight?flight=WN2026')
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     btn.disabled = false;
