@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>sendNotification</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,6 +18,8 @@
         .container {
             text-align: center;
             padding: 2rem;
+            max-width: 600px;
+            width: 100%;
         }
         h1 {
             font-size: 3.5rem;
@@ -27,12 +29,133 @@
             font-size: 1.2rem;
             opacity: 0.9;
         }
+        .btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #flight-data {
+            margin-top: 1.5rem;
+            text-align: left;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        #flight-data h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 0.5rem;
+        }
+        .flight-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .flight-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        .flight-value {
+            text-align: right;
+        }
+        .error {
+            color: #ffcccc;
+            font-weight: 600;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102,126,234,0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Hello, World!</h1>
         <p>Welcome to your Spring Boot application.</p>
+
+        <button class="btn" id="fetch-btn" onclick="fetchFlight()">
+            Get Flight WN2026
+        </button>
+
+        <div id="flight-data"></div>
     </div>
+
+    <script>
+        function fetchFlight() {
+            var btn = document.getElementById('fetch-btn');
+            var dataDiv = document.getElementById('flight-data');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Loading...';
+            dataDiv.style.display = 'none';
+
+            fetch('/api/flight?flight=WN2026')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    btn.disabled = false;
+                    btn.textContent = 'Get Flight WN2026';
+                    dataDiv.style.display = 'block';
+
+                    if (data.error) {
+                        dataDiv.innerHTML = '<p class="error">' + data.error + '</p>';
+                        return;
+                    }
+
+                    var airline = data.airline ? data.airline.name : 'N/A';
+                    var flightNum = data.flight ? data.flight.iata : 'N/A';
+                    var status = data.flight_status || 'N/A';
+                    var depAirport = data.departure ? data.departure.airport : 'N/A';
+                    var depTime = data.departure ? (data.departure.estimated || data.departure.scheduled || 'N/A') : 'N/A';
+                    var arrAirport = data.arrival ? data.arrival.airport : 'N/A';
+                    var arrTime = data.arrival ? (data.arrival.estimated || data.arrival.scheduled || 'N/A') : 'N/A';
+
+                    dataDiv.innerHTML =
+                        '<h2>Flight ' + flightNum + '</h2>' +
+                        '<div class="flight-row"><span class="flight-label">Airline</span><span class="flight-value">' + airline + '</span></div>' +
+                        '<div class="flight-row"><span class="flight-label">Status</span><span class="flight-value">' + status + '</span></div>' +
+                        '<div class="flight-row"><span class="flight-label">Departure</span><span class="flight-value">' + depAirport + '</span></div>' +
+                        '<div class="flight-row"><span class="flight-label">Dep. Time</span><span class="flight-value">' + depTime + '</span></div>' +
+                        '<div class="flight-row"><span class="flight-label">Arrival</span><span class="flight-value">' + arrAirport + '</span></div>' +
+                        '<div class="flight-row"><span class="flight-label">Arr. Time</span><span class="flight-value">' + arrTime + '</span></div>';
+                })
+                .catch(function(err) {
+                    btn.disabled = false;
+                    btn.textContent = 'Get Flight WN2026';
+                    dataDiv.style.display = 'block';
+                    dataDiv.innerHTML = '<p class="error">Request failed: ' + err.message + '</p>';
+                });
+        }
+    </script>
 </body>
 </html>
