@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -21,11 +22,18 @@ public class WebhookService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @SuppressWarnings("unchecked")
     public void fireWebhook(Map<String, Object> flightData) {
-        Map<String, Object> payload = Map.of(
-                "event", "flight_data_retrieved",
-                "data", flightData
-        );
+        String flightName = "Unknown";
+        Map<String, Object> flightInfo = (Map<String, Object>) flightData.get("flight");
+        if (flightInfo != null && flightInfo.get("iata") != null) {
+            flightName = flightInfo.get("iata").toString();
+        }
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("event", "flight_data_retrieved");
+        payload.put("flightName", flightName);
+        payload.put("data", flightData);
 
         if (webhookUrl == null || webhookUrl.isBlank()) {
             logger.info("Webhook event fired (no URL configured): {}", payload);
