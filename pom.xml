@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>hello-world</artifactId>
+    <artifactId>send-notification</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>hello-world</name>
-    <description>Hello World Spring Boot Application</description>
+    <name>sendNotification</name>
+    <description>Send Notification Spring Boot Application</description>
 
     <properties>
         <java.version>17</java.version>
