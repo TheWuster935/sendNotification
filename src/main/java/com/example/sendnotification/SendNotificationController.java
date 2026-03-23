@@ -8,6 +8,6 @@ public class SendNotificationController {
 
     @GetMapping("/")
     public String hello() {
-        return "hello";
+        return "index";
     }
 }
