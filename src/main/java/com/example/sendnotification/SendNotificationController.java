@@ -14,6 +14,6 @@ public class SendNotificationController {
     @GetMapping("/")
     public String hello(Model model) {
         model.addAttribute("apiBaseUrl", apiGatewayBaseUrl);
-        return "hello";
+        return "index";
     }
 }
