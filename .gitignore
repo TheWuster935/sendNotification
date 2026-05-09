@@ -9,3 +9,12 @@ target/
 .idea/
 *.iml
 .DS_Store
+
+# CDK
+cdk/node_modules/
+cdk/cdk.out/
+cdk/*.js
+cdk/*.d.ts
+
+# Lambda build artifacts
+lambda/target/
